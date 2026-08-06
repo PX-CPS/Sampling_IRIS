@@ -3,6 +3,13 @@
 **A certified sampling layer for IRIS / GCS convex-region libraries — and the
 first measurement of what those libraries actually contain.**
 
+### ▶ [Video results — px-cps.github.io/Sampling_IRIS](https://px-cps.github.io/Sampling_IRIS/)
+
+Five annotated result videos: an aerial planner flying through walls on the
+library as shipped versus the certified route beside it, a dual-arm
+pick-and-place delivered twice, the worst task violation in full, a certified
+positive control, and a frame-by-frame forensic audit of one benchmark query.
+
 Every planner in the graphs-of-convex-sets (GCS) family rests on one sentence:
 *points inside the regions are collision-free*. The regions come from a
 sampling-based generator (IRIS-ZO / IRIS-NP) whose contract is explicitly
@@ -82,6 +89,9 @@ affordable; adversarial placement of the residual makes it necessary.
 
 ## Video
 
+All result videos with their measurements are on the project page:
+**<https://px-cps.github.io/Sampling_IRIS/>** (sources in `docs/media/`).
+
 `media/uav_certified_compare.mp4` — one query, one city block, two answers.
 Left: on the library as shipped, the geometric optimum (54.27 m) flies through
 solid walls — 14 trajectory samples inside true geometry — and every planner on
@@ -94,6 +104,7 @@ safety; it lost both.
 ## Layout
 
 ```
+docs/      the project page (GitHub Pages: /docs on main) and its videos
 src/       experiment and library code (flat, so the imports run as-is)
 slurm/     cluster batch scripts for the long runs
 figures/   main figure (draw.io / pptx sources) and paper figures
