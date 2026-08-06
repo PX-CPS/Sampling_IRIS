@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Certified Sampling for GCS Region Libraries — video results</title>
+<meta name="description" content="Video results for the region-soundness measurement in graphs-of-convex-sets planning and the runtime certificate layer that survives it.">
+<style>
+:root{
+  --bg:#fbfaf7; --ink:#16202b; --muted:#5d6a75; --line:#e3ded3;
+  --card:#ffffff; --accent:#1e5a8e; --bad:#b3261e; --good:#186c3b;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#10151c; --ink:#e7e4dd; --muted:#98a2ac; --line:#26303c;
+         --card:#161d26; --accent:#7fb2e5; --bad:#ff7264; --good:#5ecb85; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+main{max-width:940px;margin:0 auto;padding:3.4rem 1.25rem 4.5rem}
+header{border-bottom:1px solid var(--line);padding-bottom:1.6rem;margin-bottom:2.2rem}
+h1{font-size:1.72rem;line-height:1.3;margin:0 0 .5rem;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:1.02rem;margin:0 0 1.1rem}
+.byline{font-size:.95rem;color:var(--muted);margin:0 0 1.1rem}
+.links{display:flex;flex-wrap:wrap;gap:.5rem}
+a{color:var(--accent)}
+.btn{display:inline-block;border:1px solid var(--line);background:var(--card);
+  border-radius:7px;padding:.34rem .8rem;font-size:.9rem;text-decoration:none;
+  color:var(--ink)}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+h2{font-size:1.16rem;margin:2.8rem 0 .5rem;letter-spacing:-.01em}
+h2 .idx{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:.5rem;
+  font-weight:400}
+p{margin:.6rem 0}
+.lead{font-size:1.02rem}
+figure{margin:1.1rem 0 0}
+video{width:100%;display:block;border-radius:9px;border:1px solid var(--line);
+  background:#000}
+figcaption{color:var(--muted);font-size:.92rem;margin-top:.6rem}
+figcaption strong{color:var(--ink)}
+.num{font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink)}
+.bad{color:var(--bad);font-weight:600}
+.good{color:var(--good);font-weight:600}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.94rem}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--line);
+  vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:.86rem;letter-spacing:.02em;
+  text-transform:uppercase}
+td.n{font-variant-numeric:tabular-nums;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:.8rem;margin:1.2rem 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:9px;
+  padding:.85rem .95rem}
+.stat .v{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums;
+  line-height:1.1}
+.stat .k{color:var(--muted);font-size:.87rem;margin-top:.25rem}
+.note{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:7px;padding:.75rem .95rem;font-size:.93rem;color:var(--muted)}
+footer{border-top:1px solid var(--line);margin-top:3.2rem;padding-top:1.2rem;
+  color:var(--muted);font-size:.9rem}
+@media(max-width:640px){h1{font-size:1.42rem}main{padding-top:2.4rem}}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Certified sampling for convex-region libraries</h1>
+  <p class="sub">Planners built on graphs of convex sets trust their region
+  library and never re-check what they return. This page shows what that
+  costs — and what a runtime certificate buys back.</p>
+  <p class="byline">Peng Xie · Technical University of Munich ·
+  <a href="mailto:pengxie2024@gmail.com">pengxie2024@gmail.com</a></p>
+  <div class="links">
+    <a class="btn" href="https://github.com/PX-CPS/Sampling_IRIS">Code — GitHub</a>
+    <a class="btn" href="https://github.com/PX-CPS/Sampling_IRIS/blob/main/notes/soundness_note.pdf">Technical note (PDF)</a>
+    <a class="btn" href="https://github.com/PX-CPS/Sampling_IRIS/blob/main/notes/certainty_experiments.pdf">Experimental record (PDF)</a>
+  </div>
+</header>
+
+<p class="lead">Every planner in the graphs-of-convex-sets family rests on
+one sentence: <em>points inside the regions are collision-free</em>. The
+regions come from a sampling-based generator whose contract is explicitly
+probabilistic — at confidence <span class="num">1−δ</span> the colliding
+volume fraction is at most <span class="num">ε</span>, with ε&nbsp;&gt;&nbsp;0
+by construction. The planning side consumes that contract as a deterministic
+one. We measured the consequences on a scaled 14-DOF library, and the
+result is not a rounding error: an optimizer is not a sampler, it is an
+<em>argmin</em> — an active search for exactly the model surplus that
+shortens paths.</p>
+
+<div class="grid">
+  <div class="stat"><div class="v">3.2%</div>
+    <div class="k">of interface samples in collision (volume measure)</div></div>
+  <div class="stat"><div class="v bad">62%</div>
+    <div class="k">of task-query reference optima physically colliding (18/29)</div></div>
+  <div class="stat"><div class="v bad">−91 mm</div>
+    <div class="k">worst penetration of a delivered “optimal” path</div></div>
+  <div class="stat"><div class="v good">0</div>
+    <div class="k">invalid answers delivered by the certified layer (29 queries)</div></div>
+</div>
+
+<h2><span class="idx">01</span>Aerial: the shortcut through the wall was never a shortcut</h2>
+<figure>
+  <video controls muted loop playsinline preload="metadata" src="media/uav_compare.mp4"></video>
+  <figcaption><strong>Same city block, same query, two answers.</strong>
+  <em>Left</em> — the optimum on the library as shipped by the upstream
+  generator, whose walls are pierced by portals that do not exist in the
+  world: length <span class="num">54.27</span>, with
+  <span class="bad">14 of 2606 trajectory samples inside true walls</span>.
+  Every planner on that library returns this route (GCS*, full GCS:
+  identical), reports success, and re-checks nothing.
+  <em>Right</em> — the same query once physical validation has flagged the
+  violation and the library has been audited and rebuilt at the real
+  window: <span class="good">0 of 1690 samples in walls</span>, live
+  minimum-clearance readout, length <span class="num">53.79</span> —
+  <span class="good">0.9% shorter than the illegal answer</span>. The
+  contaminated map did not trade optimality for safety; it lost both.
+  Both trajectories are archived planner outputs; the rendered scene is the
+  analytic building model the audit ran on.</figcaption>
+</figure>
+
+<h2><span class="idx">02</span>Manipulation: the same task, delivered twice</h2>
+<figure>
+  <video controls muted loop playsinline preload="metadata" src="media/bimanual_pickplace_compare.mp4"></video>
+  <figcaption><strong>Dual-arm 14-DOF pick-and-place, split screen.</strong>
+  Both arms carry a package from the top shelf to the bins.
+  <em>Left</em> — the reference answer (cost <span class="num">4.809</span>):
+  <span class="bad">11% of the path is in collision</span>, and the red frames
+  show a gripper and its cargo <span class="bad">30 mm inside the shelf
+  panel</span>. <em>Right</em> — our certified answer (cost
+  <span class="num">6.145</span>, <span class="num">+27.8%</span>) routes
+  outside the shelf, reading <span class="good">+274.7 mm clearance</span> at
+  the same instant. Disclosure: the packages are kinematic props, not part of
+  the collision scene; the certificate covers the robot's motion.</figcaption>
+</figure>
+
+<h2><span class="idx">03</span>The worst task pair, in full</h2>
+<figure>
+  <video controls muted loop playsinline preload="metadata" src="media/task_violation.mp4"></video>
+  <figcaption><strong>A real grasp-to-grasp query, and the answer a planner
+  hands back.</strong> Cost <span class="num">2.4797</span>, reproduced from
+  the benchmark to the last digit — and
+  <span class="bad">51% of its length is inside the shelving</span>, reaching
+  <span class="bad">41 mm</span> of penetration. Both endpoints are valid
+  named grasp configurations clearing by tens of millimetres: it is the
+  <em>path</em> that enters the shelf, not the query.</figcaption>
+</figure>
+
+<h2><span class="idx">04</span>Positive control: what a certified answer looks like</h2>
+<figure>
+  <video controls muted loop playsinline preload="metadata" src="media/task_certified.mp4"></video>
+  <figcaption><strong>The same pipeline on a clean task pair.</strong> Our
+  answer reproduces the reference optimum <span class="num">4.755</span>
+  digit-for-digit, and carries a continuous certificate: minimum clearance
+  <span class="good">+64 mm</span> over the whole trajectory, established by
+  178 clearance queries. Where the reference is right, validation costs
+  nothing and changes nothing — it only tells you so.</figcaption>
+</figure>
+
+<h2><span class="idx">05</span>Forensics: one benchmark query, three violations</h2>
+<figure>
+  <video controls muted loop playsinline preload="metadata" src="media/q8_forensics.mp4"></video>
+  <figcaption><strong>A random benchmark query, audited frame by frame.</strong>
+  The stored cost <span class="num">9.4432</span> is reproduced bit-exactly and
+  the resulting path fails <span class="bad">286 of 2000</span> collision
+  probes. Three separate intervals: the start configuration itself sits
+  <span class="bad">63.5 mm</span> inside the shelving (the benchmark sampled
+  it from a contaminated region), then two mid-path arm-into-arm
+  interpenetrations of <span class="bad">41.7 mm</span> and
+  <span class="bad">56.2 mm</span> that no endpoint can explain. Verdicts and
+  probe counts reproduce identically on a second machine.</figcaption>
+</figure>
+
+<h2><span class="idx">06</span>Why the fix must be at the answer, not the library</h2>
+<p>Certainty about a <em>d</em>-dimensional volume must be paid wherever that
+volume touches obstacles; certainty about the <em>one</em>-dimensional path a
+robot actually executes is paid only along that path. Three independent routes
+to volume-level certainty were run to completion, and all three destroy the
+connectivity planning needs before they deliver soundness where the tasks
+live:</p>
+<table>
+  <thead><tr><th>route</th><th>certainty delivered</th><th>measured cost to the graph</th></tr></thead>
+  <tbody>
+    <tr><td>strict Bernoulli gate at generation (ε = 0.1%, enforced)</td>
+        <td>10× tighter, probabilistic</td>
+        <td class="n">219 → 47 regions, 2757 → <strong>0</strong> portals</td></tr>
+    <tr><td>SOS certificates (C-IRIS, 2-DOF testbed)</td>
+        <td>deterministic</td>
+        <td class="n">7 disconnected islands, <strong>0/30</strong> queries solved</td></tr>
+    <tr><td>uniform margins (erosion sweep)</td>
+        <td>none (3.4% → 2.6%)</td>
+        <td class="n">queries disconnect first</td></tr>
+    <tr><td><strong>runtime path certificate</strong></td>
+        <td><strong>deterministic, per answer</strong></td>
+        <td class="n"><strong>none — the graph is untouched</strong></td></tr>
+  </tbody>
+</table>
+
+<p>The layer composes two ideas on top of the convex decomposition.
+<strong>Safety certificates</strong> — one distance query frees a whole ball:
+clearance φ(q) and the robot's Lipschitz constant L make the ball of radius
+φ(q)/L provably safe, and overlapping balls chained along a segment are a
+continuous proof with no resolution parameter and therefore no resolution
+loophole. <strong>Lazy collision checking</strong> — most edges are never used
+by any shortest path, so validate the returned path only, repair in-region or
+blacklist the edge, re-search. Sparsity (the library is 97% clean) makes
+validation affordable; the adversarial placement of the residual makes it
+necessary.</p>
+
+<h2><span class="idx">07</span>Head-to-head</h2>
+<p>29 connected task queries, same library, same machine, reference arm
+configured exactly as the benchmark specifies.</p>
+<table>
+  <thead><tr><th></th><th>reference planner</th><th>certified layer</th></tr></thead>
+  <tbody>
+    <tr><td>delivered answers failing certification</td>
+        <td class="n bad">21 / 29</td><td class="n good">0</td></tr>
+    <tr><td>certified answers / honest “no path”</td>
+        <td class="n">0 / 0</td><td class="n">15 / 14</td></tr>
+    <tr><td>time to first answer</td>
+        <td class="n">1.59 s (unvalidated)</td><td class="n">1.14 s (certified)</td></tr>
+    <tr><td>cost ratio where both solve cleanly</td>
+        <td class="n">1.0000</td><td class="n">1.0000 (digit-for-digit)</td></tr>
+    <tr><td>price of truth where the reference is wrong</td>
+        <td class="n">—</td><td class="n">median +14%</td></tr>
+  </tbody>
+</table>
+<p class="note">This is not a claim that any published theorem is wrong. Every
+result in the family is correct relative to its input sets, and the affected
+papers' own experimental domains largely avoid the regime measured here. What
+is missing from the literature is the measurement — and a layer that validates
+the answer a planner actually returns.</p>
+
+<footer>
+  <p>Code, data and figure sources:
+  <a href="https://github.com/PX-CPS/Sampling_IRIS">github.com/PX-CPS/Sampling_IRIS</a>
+  · © 2026 Peng Xie · plain HTML, no trackers, no third-party requests.</p>
+</footer>
+
+</main>
+</body>
+</html>
