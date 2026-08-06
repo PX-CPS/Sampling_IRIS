@@ -83,11 +83,13 @@ affordable; adversarial placement of the residual makes it necessary.
 ## Video
 
 `media/uav_certified_compare.mp4` — one query, one city block, two answers.
-Left: the shipped library's geometric optimum flies through solid walls
-(14 trajectory samples inside true geometry) while reporting success. Right:
-the same query through this layer — violation detected, illegal portals
-blacklisted, route re-planned and certified (2736/2736 samples clean, minimum
-clearance +0.65 m, +28 % length).
+Left: on the library as shipped, the geometric optimum (54.27 m) flies through
+solid walls — 14 trajectory samples inside true geometry — and every planner on
+that library returns it and reports success. Right: once physical validation
+flags the violation and the library is audited and rebuilt at the real window,
+the certified route is 53.79 m with 0/1690 samples in walls: **0.9 % shorter
+than the illegal answer**. The contaminated map did not trade optimality for
+safety; it lost both.
 
 ## Layout
 

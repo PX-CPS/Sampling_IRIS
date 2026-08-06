@@ -58,23 +58,25 @@ def main():
     from PIL import Image, ImageDraw, ImageFont
 
     A = np.load(os.path.join(HERE, "out", "traj_gcsstar_orig.npz"))
-    B = np.load(os.path.join(HERE, "out", "uav_traj.npz"))
+    # the certified answer on the audited library (v3: illegal portals
+    # removed AND the true-window regions rebuilt) -- 1690 samples
+    B = np.load(os.path.join(HERE, "out", "uav_trajR.npz"))
     CLR = np.load(os.path.join(HERE, "out",
-                               "uav_traj_clearance.npz"))["clearance"]
+                               "uav_clearance_fullR.npz"))["clearance"]
     LA = float(np.linalg.norm(np.diff(A["p"], axis=0), axis=1).sum())
     LB = float(np.linalg.norm(np.diff(B["p"], axis=0), axis=1).sum())
     n_viol = int(A["viol"].sum())
     sides = [
         dict(P=A["p"], V=A["v"], viol=A["viol"].astype(bool),
              clr=None, trail=TRAIL_L,
-             t1="GCS* on the shipped library",
-             t2=f"length {LA:.2f}   through-wall portals taken: "
-                f"{n_viol} samples inside true walls"),
+             t1="the shipped library's optimum (GCS*, full GCS: same route)",
+             t2=f"length {LA:.2f}   —   {n_viol} trajectory samples "
+                f"inside true walls"),
         dict(P=B["p"], V=B["v"], viol=np.zeros(len(B["p"]), bool),
              clr=CLR, trail=TRAIL_R,
-             t1="ours: validate + blacklist + reroute + certify",
-             t2=f"length {LB:.2f} (+{100*(LB/LA-1):.0f}%)   "
-                f"2736/2736 truth samples clean"),
+             t1="audited + rebuilt library, certified answer",
+             t2=f"length {LB:.2f} ({100*(LB/LA-1):+.1f}% — shorter than "
+                f"the illegal route)   0/{len(B['p'])} samples in walls"),
     ]
     for s in sides:
         s["quat"] = yaw_quats(np.arange(len(s["P"])), s["V"])
@@ -141,7 +143,7 @@ def main():
                    font=f3)
         elif s["clr"] is not None:
             kc = min(int(frac * (len(s["clr"]) - 1)), len(s["clr"]) - 1)
-            msg = f"clearance +{s['clr'][kc]:.2f} m  CERTIFIED"
+            msg = f"clearance +{s['clr'][kc]:.2f} m   CERTIFIED"
             w = d.textlength(msg, f4)
             d.rectangle([W2 / 2 - w / 2 - 16, 108, W2 / 2 + w / 2 + 16,
                          156], fill=(8, 90, 50, 210))
@@ -183,19 +185,22 @@ def main():
     card = Image.new("RGB", (2 * W2, H), (10, 13, 18))
     d = ImageDraw.Draw(card)
     lines = [
-        ("The shipped map contains doors through walls.", f3,
+        ("The shipped map has doors through walls.", f3,
          (255, 255, 255)),
-        ("The optimizer takes every one of them.", f3, (255, 140, 120)),
+        ("Every planner on it takes them — and reports success.", f3,
+         (255, 140, 120)),
         ("", f2, (0, 0, 0)),
-        (f"Our layer flags all {n_viol} violating samples, blacklists "
-         "the illegal portals,", f1, (220, 220, 220)),
-        (f"reroutes, and certifies the detour: +{100*(LB/LA-1):.0f}% "
-         "path length, minimum clearance +0.65 m.", f1,
+        (f"Physical validation flags all {n_viol} violating samples. "
+         "With the map audited and rebuilt,", f1, (220, 220, 220)),
+        (f"the certified route is {LB:.2f} m — "
+         f"{abs(LB/LA-1)*100:.1f}% SHORTER than the illegal one, "
+         f"clearance never below +{CLR.min():.2f} m.", f1,
          (150, 255, 190)),
         ("", f2, (0, 0, 0)),
-        ("The certificate is the difference between a delivery",
+        ("The shortcut through the wall was never a shortcut.",
          f4, (255, 255, 255)),
-        ("and a drone in a wall.", f4, (255, 255, 255)),
+        ("Checking the answer cost nothing — and bought the truth.",
+         f4, (255, 255, 255)),
     ]
     y = 190
     for txt, ft, col in lines:
