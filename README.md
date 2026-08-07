@@ -87,29 +87,28 @@ Certificates cost ~200 clearance queries (2.3 ms each) per path, 0.02–0.06 s �
 cheap precisely because the library is 97 % clean. Sparsity makes validation
 affordable; adversarial placement of the residual makes it necessary.
 
-## Video
+## Videos
 
-All result videos with their measurements are on the project page:
-**<https://px-cps.github.io/Sampling_IRIS/>** (sources in `docs/media/`).
+All five result videos live in [`docs/media/`](docs/media) and play in the
+browser on the project page, **<https://px-cps.github.io/Sampling_IRIS/>**,
+or directly from GitHub:
 
-`media/uav_certified_compare.mp4` — one query, one city block, two answers.
-Left: on the library as shipped, the geometric optimum (54.27 m) flies through
-solid walls — 14 trajectory samples inside true geometry — and every planner on
-that library returns it and reports success. Right: once physical validation
-flags the violation and the library is audited and rebuilt at the real window,
-the certified route is 53.79 m with 0/1690 samples in walls: **0.9 % shorter
-than the illegal answer**. The contaminated map did not trade optimality for
-safety; it lost both.
+| video | what it shows |
+|---|---|
+| [Aerial comparison](https://github.com/PX-CPS/Sampling_IRIS/blob/main/docs/media/uav_compare.mp4) | Same query on one city block. On the library as shipped, the geometric optimum (54.27 m) flies through solid walls — 14 trajectory samples inside true geometry — and reports success. After validation flags it and the library is rebuilt at the real window, the certified route is 53.79 m with 0/1690 samples in walls: **0.9 % shorter than the illegal answer**. |
+| [Dual-arm pick-and-place](https://github.com/PX-CPS/Sampling_IRIS/blob/main/docs/media/bimanual_pickplace_compare.mp4) | 14-DOF split screen. The reference answer (cost 4.809) puts a gripper and its cargo 30 mm inside the shelf panel for 11 % of the path; our certified answer (6.145) routes outside the shelf, reading +274.7 mm clearance at the same instant. |
+| [Worst task violation](https://github.com/PX-CPS/Sampling_IRIS/blob/main/docs/media/task_violation.mp4) | A real grasp-to-grasp query, cost 2.4797 reproduced from the benchmark to the last digit, with 51 % of its length inside the shelving and 41 mm of penetration. Both endpoints are valid grasp configurations: the path is what enters the shelf. |
+| [Certified positive control](https://github.com/PX-CPS/Sampling_IRIS/blob/main/docs/media/task_certified.mp4) | The same pipeline on a clean pair. Our answer reproduces the reference optimum 4.755 digit for digit and carries a continuous certificate: minimum clearance +64 mm over the whole trajectory, established by 178 clearance queries. |
+| [Single-query forensics](https://github.com/PX-CPS/Sampling_IRIS/blob/main/docs/media/q8_forensics.mp4) | One benchmark query, frame by frame. Stored cost 9.4432 reproduced bit-exactly; 286 of 2000 probes collide across three intervals: a start configuration 63.5 mm inside the shelving, then two arm-into-arm interpenetrations of 41.7 mm and 56.2 mm. |
 
 ## Layout
 
 ```
-docs/      the project page (GitHub Pages: /docs on main) and its videos
+docs/      the project page (GitHub Pages: /docs on main) and the five videos
 src/       experiment and library code (flat, so the imports run as-is)
 slurm/     cluster batch scripts for the long runs
 figures/   main figure (draw.io / pptx sources) and paper figures
 notes/     two technical notes (PDF): the mathematics, and the lab record
-media/     the certified-vs-colliding comparison flight
 ```
 
 ### Map of `src/`
