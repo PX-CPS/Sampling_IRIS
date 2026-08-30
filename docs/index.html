@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Certified Planning on Convex Sets</title>
-<meta name="description" content="Sampling-based certified planning with graphs of convex sets: what the region libraries actually contain, why planners return colliding answers, and the certificate layer that fixes it at the answer. Explanation, video, code.">
+<meta name="description" content="Sampling-based certified planning with graphs of convex sets: what the region libraries actually contain, why planners return colliding answers, and the certificate layer that fixes it at the answer. Explanation, video, paper.">
 <style>
 :root{
   --bg:#fbfaf7; --ink:#16202b; --muted:#5d6a75; --line:#e3ded3;
@@ -37,7 +37,7 @@ a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius
   color:var(--ink)}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.dis{color:var(--muted);cursor:default}
-nav.parts{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:0 0 2.4rem}
+nav.parts{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin:0 0 2.4rem}
 nav.parts a{display:block;border:1px solid var(--line);background:var(--card);
   border-radius:9px;padding:.7rem .9rem;text-decoration:none;color:var(--ink)}
 nav.parts a:hover{border-color:var(--accent)}
@@ -101,7 +101,6 @@ footer{border-top:1px solid var(--line);margin-top:3.4rem;padding-top:1.2rem;col
   <div class="links">
     <a class="btn" href="paper.pdf">Paper (PDF)</a>
     <span class="btn dis">arXiv: link follows</span>
-    <a class="btn" href="https://github.com/PX-CPS/Sampling_IRIS">Code on GitHub</a>
     <a class="btn" href="#video">Video</a>
   </div>
 </header>
@@ -109,7 +108,6 @@ footer{border-top:1px solid var(--line);margin-top:3.4rem;padding-top:1.2rem;col
 <nav class="parts" aria-label="Page sections">
   <a href="#idea"><span class="k">Read</span><span class="t">The paper in plain words</span></a>
   <a href="#video"><span class="k">Watch</span><span class="t">The result video, two minutes</span></a>
-  <a href="#code"><span class="k">Run</span><span class="t">Code, data, and how to reproduce</span></a>
 </nav>
 
 <h2 id="idea"><span class="k">Read</span>The paper in plain words</h2>
@@ -229,53 +227,8 @@ part of the collision model.</p>
   <li><button type="button" data-t="75">1:15</button>14-DOF transfer and handover</li>
 </ul>
 
-<h2 id="code"><span class="k">Run</span>Code and reproduction</h2>
-<p>Everything on this page comes from the repository
-<a href="https://github.com/PX-CPS/Sampling_IRIS">PX-CPS/Sampling_IRIS</a>:
-the measurement protocol, the library-repair studies, the certified planner,
-and the renderers. The scripts are flat in <code>src/</code> so the imports
-run as they are; long runs are Slurm jobs under <code>slurm/</code>.</p>
-
-<h3>Requirements</h3>
-<pre><code>python 3.12
-drake 1.54          # IrisZo, CspaceFreePolytope, SceneGraphCollisionChecker
-numpy scipy cvxpy clarabel   # MOSEK only for the SOS and full-graph GCS arms
-mujoco imageio imageio-ffmpeg   # renderers
-gcs-science-robotics on PYTHONPATH   # bimanual scene assets
-</code></pre>
-<pre><code>git clone https://github.com/PX-CPS/Sampling_IRIS
-git clone https://github.com/mpetersen94/gcs gcs-science-robotics
-export GCS_SR=$PWD/gcs-science-robotics
-cd Sampling_IRIS/src
-python3 e6_build_iris2d.py        # 2-D testbed and figures, laptop scale
-sbatch ../slurm/e16_h2h.sbatch    # the closing head-to-head, cluster
-</code></pre>
-
-<h3>Where things live</h3>
-<div class="tablewrap">
-<table>
-  <thead><tr><th>file</th><th>role</th></tr></thead>
-  <tbody>
-    <tr><td><code>e6_sampling.py</code></td><td>interface classification, the four samplers, roadmap construction, the traversability rule</td></tr>
-    <tr><td><code>e6_step2_anytime.py</code></td><td>anytime interface planner: informed pruning, monotone incumbents, verification callback</td></tr>
-    <tr><td><code>e7_highd_audit.py</code></td><td>7-DOF and 14-DOF port: lazy rejection, repair first, corridor polish with re-verification</td></tr>
-    <tr><td><code>e8_validate.py</code></td><td>the continuous certificate: clearance and Lipschitz ball chain, in-region repair</td></tr>
-    <tr><td><code>e9_verify_gcsstar.py</code>, <code>e9b_depth_profiles.py</code></td><td>audit protocol for reference answers: bit-exact reproduction, dual validation, penetration profiles</td></tr>
-    <tr><td><code>e10_regen219.py</code>, <code>e8_repair_lib.py</code>, <code>e8_erosion.py</code>, <code>e15_ciris_2dof.py</code></td><td>the library-level remedies run to completion</td></tr>
-    <tr><td><code>e16_headtohead.py</code></td><td>the closing experiment on all 29 task queries</td></tr>
-    <tr><td><code>baseline_gcsstar.py</code></td><td>the search-based reference planner in its benchmark configuration</td></tr>
-    <tr><td><code>stageB_bimanual_*.py</code>, <code>panda_scene.py</code></td><td>scenes and region libraries the layer runs on</td></tr>
-  </tbody>
-</table>
-</div>
-<p class="note">Two technical notes accompany the code:
-<a href="https://github.com/PX-CPS/Sampling_IRIS/blob/main/notes/soundness_note.pdf">the mathematics</a>
-(why the residual must exist, the certificate lemmas) and
-<a href="https://github.com/PX-CPS/Sampling_IRIS/blob/main/notes/certainty_experiments.pdf">the lab record</a>
-(recipes, raw tables, every number with the artifact that produced it).</p>
-
-<footer>Peng Xie and Amr Alanwar, Technical University of Munich. Funded by the
-Deutsche Forschungsgemeinschaft (DFG), project 564740977.</footer>
+<footer>Peng Xie and Amr Alanwar, Technical University of Munich. Code will be
+released with the paper.</footer>
 
 </main>
 <script>
