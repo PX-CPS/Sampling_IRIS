@@ -99,7 +99,7 @@ footer{border-top:1px solid var(--line);margin-top:3.4rem;padding-top:1.2rem;col
   <p class="byline">Peng Xie and Amr Alanwar · Technical University of Munich ·
   <a href="mailto:p.xie@tum.de">p.xie@tum.de</a></p>
   <div class="links">
-    <a class="btn" href="paper.pdf">Paper (PDF)</a>
+    <a class="btn" href="@@PDF@@">Paper (PDF)</a>
     <span class="btn dis">arXiv: link follows</span>
     <a class="btn" href="https://github.com/PX-CPS/Sampling_IRIS">Code on GitHub</a>
     <a class="btn" href="#video">Video</a>
@@ -132,7 +132,7 @@ and the sliver it tolerates, which we call the residual, hugs the region
 boundary, exactly where trajectories cross from one region into the next.</p>
 
 <figure>
-  <img src="media/fig_residual.png" alt="Three panels: a convex obstacle excluded exactly by cuts; a non-convex configuration-space obstacle leaving a red residual inside the region after a cut; uniform samples missing the thin residual.">
+  <img src="@@FIG_RESIDUAL@@" alt="Three panels: a convex obstacle excluded exactly by cuts; a non-convex configuration-space obstacle leaving a red residual inside the region after a cut; uniform samples missing the thin residual.">
   <figcaption><strong>Why a residual must exist.</strong> Against a convex
   obstacle (left) cuts on its faces exclude it exactly. A configuration-space
   obstacle is non-convex (middle): a cut removes only a half-space and the
@@ -156,7 +156,7 @@ joints, the volume statistic reads exactly zero up to five joints while
 delivered answers already collide from three joints on.</p>
 
 <figure>
-  <img src="media/fig_floorplan.png" alt="A floor plan with convex regions; thin red wedges of tolerated residual; a dashed red reference optimum pressing into a wedge and a green certified path going around it.">
+  <img src="@@FIG_FLOORPLAN@@" alt="A floor plan with convex regions; thin red wedges of tolerated residual; a dashed red reference optimum pressing into a wedge and a green certified path going around it.">
   <figcaption><strong>Why a task fails.</strong> The decomposition tolerates
   thin residual wedges (red). The reference optimum (dashed red) presses into
   one of them because that is where the shortest path lies; the certified
@@ -211,7 +211,7 @@ answer on the left and our certified answer on the right, with the clearance
 read from the benchmark's own collision checker. The carried objects are
 part of the collision model.</p>
 <figure>
-  <video id="v" controls playsinline preload="metadata" src="media/icra_video.mp4"></video>
+  <video id="v" controls playsinline preload="metadata" src="@@VIDEO@@"></video>
   <figcaption><strong>Reference answer (left) against certified answer
   (right).</strong> Aerial benchmark: the reference optimum flies through
   building walls while reporting success; the certified reroute is 0.9%
